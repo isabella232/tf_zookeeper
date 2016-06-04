@@ -2,7 +2,9 @@ variable "name" {
   default = "zookeeper_cluster"
 }
 
-variable "aws_subnet_subnet_ids" {}
+variable "ebs_optimized" {
+  default = false
+}
 
 variable "aws_key_name" {}
 
@@ -15,12 +17,8 @@ variable "ami_id" {
   default     = "ami-b04842da"
 }
 
-variable "desired_cluster_size" {}
-
-variable "aws_sec_group_ids" {}
-
-variable "instance_count" {
-  default = 3
+variable "private_ips" {
+  default = "10.0.0.121,10.0.0.122,10.0.0.123"
 }
 
 variable "vpc_security_group_ids" {}

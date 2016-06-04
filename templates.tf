@@ -1,10 +1,10 @@
 resource "template_file" "zookeeper_cloud_init_file" {
   template = "${file("cloud_init/zookeeper.yaml")}"
-  count    = "${var.instance_count}"
+  count    = "${length(split(",", var.private_ips))}"
 
   vars = {
-    self_private_ip = "${element(aws_eip.zookeeper.*.private_ip, count.index)}"
-    private_ips     = "${join(",", aws_eip.zookeeper.*.private_ip)}"
+    self_private_ip = "${element(split(",", var.private_ips), count.index)}"
+    private_ips     = "${var.private_ips}"
     region          = "${var.region}"
   }
 }
