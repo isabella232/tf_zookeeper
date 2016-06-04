@@ -1,5 +1,5 @@
 variable "name" {
-    default = "zookeeper_cluster"
+  default = "zookeeper_cluster"
 }
 
 variable "aws_subnet_subnet_ids" {}

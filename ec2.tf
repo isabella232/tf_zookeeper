@@ -2,7 +2,7 @@ resource "aws_instance" "zookeeper" {
   count         = "${var.instance_count}"
   ami           = "${var.ami_id}"
   instance_type = "${var.aws_instance_type}"
-  key_name      = "${var.aws_key_pair.cihangir.key_name}"
+  key_name      = "${aws_key_pair.cihangir.key_name}"
 
   # (Optional) A list of security group IDs to associate with.
   vpc_security_group_ids = ["${split(",", var.vpc_security_group_ids)}"]
