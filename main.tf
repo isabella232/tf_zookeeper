@@ -3,10 +3,10 @@ module "aws_asg_zookeeper" {
   name                  = "${var.name}-zookeeper"
   aws_subnet_subnet_ids = "${var.aws_subnet_subnet_ids}"
   key_name              = "${var.aws_key_name}"
-  instance_type         = "${var.instance_type}"
+  instance_type         = "${var.aws_instance_type}"
   ami_id                = "${var.ami_id}"
-  desired_cluster_size  = "${var.master_desired_cluster_size}"
+  desired_cluster_size  = "${var.desired_cluster_size}"
 
   rendered_cloud_init = "${template_file.zookeeper_cloud_init_file.rendered}"
-  security_groups     = "${var.sec_group.ids}"
+  security_groups     = "${var.aws_sec_group_ids}"
 }
