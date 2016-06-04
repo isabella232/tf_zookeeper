@@ -11,5 +11,5 @@ provider "aws" {
 
 variable "region" {
   description = "AWS Region."
-  default     = "sa-east-1"
+  default     = "us-east-1"
 }
