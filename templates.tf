@@ -3,8 +3,10 @@ resource "template_file" "zookeeper_cloud_init_file" {
   count    = "${length(split(",", var.private_ips))}"
 
   vars = {
-    self_private_ip = "${element(split(",", var.private_ips), count.index)}"
-    private_ips     = "${var.private_ips}"
-    region          = "${var.region}"
+    cluster_machines = "${join(" ", split(",", var.private_ips))}"
+    self_private_ip  = "${element(split(",", var.private_ips), count.index)}"
+    private_ips      = "${var.private_ips}"
+    region           = "${var.region}"
+    machine_index    = "${count.index}"
   }
 }
