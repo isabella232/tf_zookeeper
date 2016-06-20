@@ -1,0 +1,37 @@
+#cloud-config
+
+repo_update: true
+repo_upgrade: all
+
+write_files:
+  - path: /etc/zookeeper_cluster_info.sh
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      farm_hosts=(${cluster_machines})
+      count=0
+      for i in $${farm_hosts[@]}; do
+              echo "server."$count"="$$i":2888:3888"
+              count=$$(( $count + 1 ))
+      done
+
+  - path: /etc/cluster_machines.txt
+    content: |
+      ${cluster_machines}
+
+  - path: /etc/self_private_ip.txt
+    content: |
+      ${self_private_ip}
+
+  - path: /etc/region.txt
+    content: |
+      ${region}
+
+
+runcmd:
+ - rpm -Uvh http://archive.cloudera.com/cdh4/one-click-install/redhat/6/x86_64/cloudera-cdh-4-0.x86_64.rpm
+ - yum -y install zookeeper zookeeper-server
+ - sudo -u zookeeper zookeeper-server-initialize --myid=${machine_index}
+ - /etc/zookeeper_cluster_info.sh >> /etc/zookeeper/conf/zoo.cfg
+ - service zookeeper-server start
+
