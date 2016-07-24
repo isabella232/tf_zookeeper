@@ -56,6 +56,16 @@ deploy:
     - add-ssh-key:
         keyname: DEPLOYMENT_KEY
     - script:
+        name: set ENV vars
+        code: |
+          export EB_APP_NAME=${EB_APP_NAME:-koding}
+          export EB_ENV_NAME=${EB_ENV_NAME:-terraform}
+          export EB_ENV_REGION=${EB_ENV_REGION:-us-east-1}
+          export EB_S3_BUCKET_PREFIX=${EB_S3_BUCKET_PREFIX:-kodingdev-eb-deploy}
+
+          export STATE_STOR_BUCKET_REGION=${STATE_STOR_BUCKET_REGION:-us-east-1}
+          export STATE_STOR_KEY=${STATE_STOR_KEY:-$WERCKER_APPLICATION_NAME}
+    - script:
         name: create version file
         code: |
           $WERCKER_ROOT/scripts/create_version.sh
@@ -70,12 +80,13 @@ deploy:
         code: |
           cd $WERCKER_ROOT
           zip -q --symlinks -r $(cat $WERCKER_ROOT/ARCHIVE_NAME) . || :
+
     - koding/eb-deploy@0.31.0:
-        access-key: $S3_KEY_ID
-        secret-key: $S3_KEY_SECRET
-        app-name: koding
+        access-key: $AWS_ACCESS_KEY
+        secret-key: $AWS_SECRET_KEY
+        app-name: $EB_APP_NAME
         env-name: $EB_ENV_NAME
         version-label: $(cat $WERCKER_ROOT/ARCHIVE_NAME)
         region: $EB_ENV_REGION
-        s3-bucket: $S3_EB_DEPLOY-$EB_ENV_REGION
+        s3-bucket: $EB_S3_BUCKET_PREFIX-$EB_ENV_REGION
         s3-key: $(cat $WERCKER_ROOT/ARCHIVE_NAME)
