@@ -1,6 +1,11 @@
 box: nodesource/trusty:4.3.0
 validate:
   steps:
+    - script:
+        name: install wget / curl / unzip
+        code: |
+          apt-get update
+          apt-get -y -qq install wget unzip curl
     - capgemini/terraform-install:
         version: "0.6.16"
     - script:
@@ -10,7 +15,11 @@ validate:
 
 plan:
   steps:
-
+    - script:
+        name: install wget / curl / unzip
+        code: |
+          apt-get update
+          apt-get -y -qq install wget unzip curl
     - script:
         name: set ENV vars
         code: |
@@ -32,6 +41,11 @@ plan:
 
 apply:
   steps:
+    - script:
+        name: install wget / curl / unzip
+        code: |
+          apt-get update
+          apt-get -y -qq install wget unzip curl
     - script:
         name: set ENV vars
         code: |
