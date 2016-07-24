@@ -57,11 +57,35 @@ apply:
     - capgemini/terraform-install:
         version: "0.6.16"
     - script:
-        name: run terraform plan
+        name: run terraform apply
         code: |
           mkdir -p $WERCKER_APPLICATION_NAME
           terraform remote config -backend=s3 -backend-config="bucket=$STATE_STOR_BUCKET" -backend-config="key=$STATE_STOR_KEY" -backend-config="region=$STATE_STOR_BUCKET_REGION"
           terraform apply $STATE_STOR_OUT_KEY
+
+destroy:
+  steps:
+    - script:
+        name: install wget / curl / unzip
+        code: |
+          apt-get update
+          apt-get -y -qq install wget unzip curl
+    - script:
+        name: set ENV vars
+        code: |
+          export STATE_STOR_BUCKET=${STATE_STOR_BUCKET:-kodingdev-tf-state}
+          export STATE_STOR_BUCKET_REGION=${STATE_STOR_BUCKET_REGION:-us-east-1}
+          export STATE_STOR_KEY=${STATE_STOR_KEY:-$WERCKER_APPLICATION_NAME}
+          export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-$TF_VAR_access_key}
+          export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-$TF_VAR_secret_key}
+    - capgemini/terraform-install:
+        version: "0.6.16"
+    - script:
+        name: run terraform destroy -force
+        code: |
+          mkdir -p $WERCKER_APPLICATION_NAME
+          terraform remote config -backend=s3 -backend-config="bucket=$STATE_STOR_BUCKET" -backend-config="key=$STATE_STOR_KEY" -backend-config="region=$STATE_STOR_BUCKET_REGION"
+          terraform destroy -force
 
 deploy:
   steps:
