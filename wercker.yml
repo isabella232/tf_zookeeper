@@ -34,6 +34,7 @@ plan:
     - script:
         name: run terraform plan
         code: |
+          terraform remote config -backend=s3 -backend-config="bucket=$STATE_STOR_BUCKET" -backend-config="key=$STATE_STOR_KEY" -backend-config="region=$STATE_STOR_BUCKET_REGION"
           terraform plan
 
 apply:
