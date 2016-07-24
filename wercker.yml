@@ -55,12 +55,14 @@ deploy:
   steps:
     - add-ssh-key:
         keyname: DEPLOYMENT_KEY
+
     - script:
         name: install deps
         code: |
           apt-get update
           apt-get install -y software-properties-common python-software-properties python-pip
           apt-get install -y zip unzip
+
     - script:
         name: set ENV vars
         code: |
@@ -71,16 +73,19 @@ deploy:
 
           export STATE_STOR_BUCKET_REGION=${STATE_STOR_BUCKET_REGION:-us-east-1}
           export STATE_STOR_KEY=${STATE_STOR_KEY:-$WERCKER_APPLICATION_NAME}
+
     - script:
         name: create version file
         code: |
           $WERCKER_ROOT/scripts/create_version.sh
+
     - script:
         name: create temporary tokens
         code: |
           echo $ROLLBAR_TOKEN > ROLLBAR_TOKEN
           echo $PAPERTRAIL_PORT > PAPERTRAIL_PORT
           echo $PAPERTRAIL_TOKEN > PAPERTRAIL_TOKEN
+
     - script:
         name: zip
         code: |
