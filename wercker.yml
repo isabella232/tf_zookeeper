@@ -15,10 +15,9 @@ build:
         name: download terraform
         code: |
           cd $HOME/terraform
-          TFVERSION=0.6.16
-          wget https://releases.hashicorp.com/terraform/$TFVERSION/terraform_$TFVERSION_linux_amd64.zip
-          unzip terraform_$TFVERSION_linux_amd64.zip
-          rm terraform_$TFVERSION_linux_amd64.zip
+          wget https://releases.hashicorp.com/terraform/0.6.16/terraform_0.6.16_linux_amd64.zip
+          unzip terraform_0.6.16_linux_amd64.zip
+          rm terraform_0.6.16_linux_amd64.zip
     - script:
         name: run terraform plan
         code: |
