@@ -56,6 +56,12 @@ deploy:
     - add-ssh-key:
         keyname: DEPLOYMENT_KEY
     - script:
+        name: install deps
+        code: |
+          apt-get update
+          apt-get install -y software-properties-common python-software-properties python-pip
+          apt-get install -y zip unzip
+    - script:
         name: set ENV vars
         code: |
           export EB_APP_NAME=${EB_APP_NAME:-koding}
@@ -80,11 +86,6 @@ deploy:
         code: |
           cd $WERCKER_ROOT
           zip -q --symlinks -r $(cat $WERCKER_ROOT/ARCHIVE_NAME) . || :
-    - script:
-        name: install deps
-        code: |
-          apt-get update
-          apt-get install -y software-properties-common python-software-properties python-pip
 
     - koding/eb-deploy@0.31.0:
         access-key: $AWS_ACCESS_KEY
