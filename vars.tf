@@ -22,7 +22,7 @@ variable "s3_bucket_name" {
   default = "koding-dev-test-exhibitor"
 }
 
-variable "imageid" {
+variable "ami_id" {
   default = "ami-032ba014"
 }
 

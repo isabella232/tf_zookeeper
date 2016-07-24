@@ -36,8 +36,8 @@ resource "aws_elastic_beanstalk_environment" "environment" {
   }
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
-    name      = "ImageId"
-    value     = "${var.imageid}"
+    name      = "ami_id"
+    value     = "${var.ami_id}"
   }
   setting {
     namespace = "aws:autoscaling:launchconfiguration"
