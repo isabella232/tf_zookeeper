@@ -1,23 +1,8 @@
 box: nodesource/trusty:4.3.0
 validate:
   steps:
-    - script:
-        name: create terraform directory and export PATH
-        code: |
-          mkdir -p $HOME/terraform
-          export PATH=$PATH:$HOME/terraform
-    - script:
-        name: install wget / curl / unzip
-        code: |
-          apt-get update
-          apt-get -y -qq install wget unzip curl
-    - script:
-        name: download terraform
-        code: |
-          cd $HOME/terraform
-          wget --quiet https://releases.hashicorp.com/terraform/0.6.16/terraform_0.6.16_linux_amd64.zip
-          unzip terraform_0.6.16_linux_amd64.zip
-          rm terraform_0.6.16_linux_amd64.zip
+    - capgemini/terraform-install:
+        version: "0.6.16"
     - script:
         name: run terraform validate
         code: |
@@ -25,12 +10,15 @@ validate:
 
 plan:
   steps:
+
     - script:
         name: set ENV vars
         code: |
           export STATE_STOR_BUCKET=${STATE_STOR_BUCKET:-kodingdev-tf-state}
           export STATE_STOR_BUCKET_REGION=${STATE_STOR_BUCKET_REGION:-us-east-1}
           export STATE_STOR_KEY=${STATE_STOR_KEY:-$WERCKER_APPLICATION_NAME}
+    - capgemini/terraform-install:
+        version: "0.6.16"
     - releasequeue/run-terraform@0.0.17:
         action: plan
         # state_stor_bucket: $STATE_STOR_BUCKET
@@ -47,6 +35,8 @@ apply:
           export STATE_STOR_BUCKET=${STATE_STOR_BUCKET:-kodingdev-tf-state}
           export STATE_STOR_BUCKET_REGION=${STATE_STOR_BUCKET_REGION:-us-east-1}
           export STATE_STOR_KEY=${STATE_STOR_KEY:-$WERCKER_APPLICATION_NAME}
+    - capgemini/terraform-install:
+        version: "0.6.16"
     - releasequeue/run-terraform@0.0.17:
         action: apply
         state_stor_bucket: $STATE_STOR_BUCKET
