@@ -31,13 +31,10 @@ plan:
 
     - capgemini/terraform-install:
         version: "0.6.16"
-    - releasequeue/run-terraform@0.0.17:
-        action: plan
-        # state_stor_bucket: $STATE_STOR_BUCKET
-        # state_stor_bucket_region: $STATE_STOR_BUCKET_REGION
-        # state_stor_key: $STATE_STOR_KEY
-        # access_key: $TF_VAR_access_key
-        # secret_key: $TF_VAR_secret_key
+    - script:
+        name: run terraform plan
+        code: |
+          terraform plan
 
 apply:
   steps:
@@ -56,14 +53,10 @@ apply:
           export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-$TF_VAR_secret_key}
     - capgemini/terraform-install:
         version: "0.6.16"
-    - releasequeue/run-terraform@0.0.17:
-        action: apply
-        state_stor_bucket: $STATE_STOR_BUCKET
-        state_stor_bucket_region: $STATE_STOR_BUCKET_REGION
-        state_stor_key: $STATE_STOR_KEY
-        access_key: $TF_VAR_access_key
-        secret_key: $TF_VAR_secret_key
-
+    - script:
+        name: run terraform plan
+        code: |
+          terraform apply
 
 deploy:
   steps:
