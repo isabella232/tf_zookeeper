@@ -35,6 +35,7 @@ plan:
     - script:
         name: run terraform plan
         code: |
+          mkdir -p $WERCKER_APPLICATION_NAME
           terraform remote config -backend=s3 -backend-config="bucket=$STATE_STOR_BUCKET" -backend-config="key=$STATE_STOR_KEY" -backend-config="region=$STATE_STOR_BUCKET_REGION"
           terraform plan -out $STATE_STOR_OUT_KEY
 
@@ -58,6 +59,8 @@ apply:
     - script:
         name: run terraform plan
         code: |
+          mkdir -p $WERCKER_APPLICATION_NAME
+          terraform remote config -backend=s3 -backend-config="bucket=$STATE_STOR_BUCKET" -backend-config="key=$STATE_STOR_KEY" -backend-config="region=$STATE_STOR_BUCKET_REGION"
           terraform apply $STATE_STOR_OUT_KEY
 
 deploy:
