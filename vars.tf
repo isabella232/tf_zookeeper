@@ -23,7 +23,7 @@ variable "s3_bucket_name" {
 }
 
 variable "imageid" {
-  default = "ami-a2159cb5"
+  default = "ami-032ba014"
 }
 
 variable "instance_type" {
