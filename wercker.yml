@@ -36,6 +36,8 @@ plan:
         state_stor_bucket: $STATE_STOR_BUCKET
         state_stor_bucket_region: $STATE_STOR_BUCKET_REGION
         state_stor_key: $STATE_STOR_KEY
+        access_key: $TF_VAR_access_key
+        secret_key: $TF_VAR_secret_key
 
 apply:
   steps:
@@ -50,6 +52,9 @@ apply:
         state_stor_bucket: $STATE_STOR_BUCKET
         state_stor_bucket_region: $STATE_STOR_BUCKET_REGION
         state_stor_key: $STATE_STOR_KEY
+        access_key: $TF_VAR_access_key
+        secret_key: $TF_VAR_secret_key
+
 
 deploy:
   steps:
@@ -67,7 +72,7 @@ deploy:
         name: set ENV vars
         code: |
           export EB_APP_NAME=${EB_APP_NAME:-koding}
-          export EB_ENV_NAME=${EB_ENV_NAME:-terraform}
+          export EB_ENV_NAME=${EB_ENV_NAME:-zookeeper}
           export EB_ENV_REGION=${EB_ENV_REGION:-us-east-1}
           export EB_S3_BUCKET_PREFIX=${EB_S3_BUCKET_PREFIX:-kodingdev-eb-deploy}
 
