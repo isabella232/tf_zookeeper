@@ -25,20 +25,31 @@ validate:
 
 plan:
   steps:
+    - script:
+        name: set ENV vars
+        code: |
+          export STATE_STOR_BUCKET=${STATE_STOR_BUCKET:-kodingdev-tf-state}
+          export STATE_STOR_BUCKET_REGION=${STATE_STOR_BUCKET_REGION:-us-east-1}
+          export STATE_STOR_KEY=${STATE_STOR_KEY:-$WERCKER_APPLICATION_NAME}
     - releasequeue/run-terraform@0.0.17:
         action: plan
-        state_stor_bucket: tf_state_bucket
-        state_stor_bucket_region: us-east-1
-        state_stor_key: movie_api_ecs
+        state_stor_bucket: $STATE_STOR_BUCKET
+        state_stor_bucket_region: $STATE_STOR_BUCKET_REGION
+        state_stor_key: $STATE_STOR_KEY
 
 apply:
   steps:
+    - script:
+        name: set ENV vars
+        code: |
+          export STATE_STOR_BUCKET=${STATE_STOR_BUCKET:-kodingdev-tf-state}
+          export STATE_STOR_BUCKET_REGION=${STATE_STOR_BUCKET_REGION:-us-east-1}
+          export STATE_STOR_KEY=${STATE_STOR_KEY:-$WERCKER_APPLICATION_NAME}
     - releasequeue/run-terraform@0.0.17:
         action: apply
-        state_stor_bucket: tf_state_bucket
-        state_stor_bucket_region: us-east-1
-        state_stor_key: movie_api_ecs
-
+        state_stor_bucket: $STATE_STOR_BUCKET
+        state_stor_bucket_region: $STATE_STOR_BUCKET_REGION
+        state_stor_key: $STATE_STOR_KEY
 
 deploy:
   steps:
@@ -58,7 +69,6 @@ deploy:
         name: zip
         code: |
           cd $WERCKER_ROOT
-
           zip -q --symlinks -r $(cat $WERCKER_ROOT/ARCHIVE_NAME) . || :
     - koding/eb-deploy@0.31.0:
         access-key: $S3_KEY_ID
