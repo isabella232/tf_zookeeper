@@ -84,7 +84,7 @@ deploy:
         name: install deps
         code: |
           apt-get update
-          apt-get install -y software-properties-common python-software-properties
+          apt-get install -y software-properties-common python-software-properties python-pip
 
     - koding/eb-deploy@0.31.0:
         access-key: $AWS_ACCESS_KEY
