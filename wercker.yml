@@ -1,4 +1,4 @@
-box: ubuntu
+box: nodesource/trusty:4.3.0
 validate:
   steps:
     - script:
