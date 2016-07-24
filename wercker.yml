@@ -17,6 +17,9 @@ plan:
           export STATE_STOR_BUCKET=${STATE_STOR_BUCKET:-kodingdev-tf-state}
           export STATE_STOR_BUCKET_REGION=${STATE_STOR_BUCKET_REGION:-us-east-1}
           export STATE_STOR_KEY=${STATE_STOR_KEY:-$WERCKER_APPLICATION_NAME}
+          export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-$TF_VAR_access_key}
+          export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-$TF_VAR_secret_key}
+
     - capgemini/terraform-install:
         version: "0.6.16"
     - releasequeue/run-terraform@0.0.17:
@@ -35,6 +38,8 @@ apply:
           export STATE_STOR_BUCKET=${STATE_STOR_BUCKET:-kodingdev-tf-state}
           export STATE_STOR_BUCKET_REGION=${STATE_STOR_BUCKET_REGION:-us-east-1}
           export STATE_STOR_KEY=${STATE_STOR_KEY:-$WERCKER_APPLICATION_NAME}
+          export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-$TF_VAR_access_key}
+          export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-$TF_VAR_secret_key}
     - capgemini/terraform-install:
         version: "0.6.16"
     - releasequeue/run-terraform@0.0.17:
@@ -66,8 +71,11 @@ deploy:
           export EB_ENV_REGION=${EB_ENV_REGION:-us-east-1}
           export EB_S3_BUCKET_PREFIX=${EB_S3_BUCKET_PREFIX:-kodingdev-eb-deploy}
 
+          export STATE_STOR_BUCKET=${STATE_STOR_BUCKET:-kodingdev-tf-state}
           export STATE_STOR_BUCKET_REGION=${STATE_STOR_BUCKET_REGION:-us-east-1}
           export STATE_STOR_KEY=${STATE_STOR_KEY:-$WERCKER_APPLICATION_NAME}
+          export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-$TF_VAR_access_key}
+          export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-$TF_VAR_secret_key}
 
     - script:
         name: create version file
