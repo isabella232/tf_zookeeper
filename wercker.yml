@@ -80,6 +80,11 @@ deploy:
         code: |
           cd $WERCKER_ROOT
           zip -q --symlinks -r $(cat $WERCKER_ROOT/ARCHIVE_NAME) . || :
+    - script:
+        name: install deps
+        code: |
+          apt-get update
+          apt-get install -y software-properties-common python-software-properties
 
     - koding/eb-deploy@0.31.0:
         access-key: $AWS_ACCESS_KEY
