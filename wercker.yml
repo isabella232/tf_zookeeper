@@ -33,11 +33,11 @@ plan:
           export STATE_STOR_KEY=${STATE_STOR_KEY:-$WERCKER_APPLICATION_NAME}
     - releasequeue/run-terraform@0.0.17:
         action: plan
-        state_stor_bucket: $STATE_STOR_BUCKET
-        state_stor_bucket_region: $STATE_STOR_BUCKET_REGION
-        state_stor_key: $STATE_STOR_KEY
-        access_key: $TF_VAR_access_key
-        secret_key: $TF_VAR_secret_key
+        # state_stor_bucket: $STATE_STOR_BUCKET
+        # state_stor_bucket_region: $STATE_STOR_BUCKET_REGION
+        # state_stor_key: $STATE_STOR_KEY
+        # access_key: $TF_VAR_access_key
+        # secret_key: $TF_VAR_secret_key
 
 apply:
   steps:
