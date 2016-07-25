@@ -101,11 +101,12 @@ resource "aws_security_group_rule" "eb_allow_all_egress" {
 #   security_group_id = "${aws_security_group.elb.id}"
 # }
 #
-# resource "aws_security_group_rule" "elb_allow_all_egress" {
-#   type              = "egress"
-#   from_port         = 78
-#   to_port           = 80
-#   protocol          = "TCP"
-#   cidr_blocks       = ["0.0.0.0/0"]
-#   security_group_id = "${aws_security_group.elb.id}"
-# }
+
+resource "aws_security_group_rule" "elb_allow_all_egress" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = "${aws_security_group.elb.id}"
+}
