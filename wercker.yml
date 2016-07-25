@@ -135,8 +135,8 @@ deploy:
           zip -q --symlinks -r $(cat $WERCKER_ROOT/ARCHIVE_NAME) . || :
 
     - koding/eb-deploy@0.31.0:
-        access-key: $AWS_ACCESS_KEY_ID
-        secret-key: $AWS_SECRET_ACCESS_KEY
+        access-key: ${AWS_ACCESS_KEY_ID:-$TF_VAR_access_key}
+        secret-key: ${AWS_SECRET_ACCESS_KEY:-$TF_VAR_secret_key}
         app-name: $EB_APP_NAME
         env-name: $EB_ENV_NAME
         version-label: $(cat $WERCKER_ROOT/ARCHIVE_NAME)
