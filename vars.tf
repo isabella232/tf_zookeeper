@@ -27,7 +27,7 @@ variable "ami_id" {
 }
 
 variable "instance_type" {
-  default = "t2.medium"
+  default = "c3.2xlarge"
 }
 
 variable "vpc_id" {
