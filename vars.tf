@@ -1,5 +1,5 @@
 variable "env_name" {
-  default = "koding-zookeeper2"
+  default = "koding-zookeeper"
 }
 
 variable "app_name" {
