@@ -25,8 +25,9 @@ var (
 
 // holds the flag variables
 var (
-	element  = flag.Int("element", 10, "default znode number")
-	interval = flag.Duration("interval", 1, "default duration to generate strings")
+	element    = flag.Int("element", 10, "default znode number")
+	interval   = flag.Int("interval", 1, "default duration to generate strings")
+	goroutines = flag.Int("goroutines", 2, "default go routines count")
 )
 
 func main() {
@@ -50,10 +51,18 @@ func main() {
 
 	sign := make(chan os.Signal)
 	signal.Notify(sign, os.Interrupt, syscall.SIGTERM)
-	go handleCtrlC(sign)
+	// go handleCtrlC(sign)
+	closeChan := make(chan struct{},0)
+	go produce(time.Second*time.Duration(*interval), *element, closeChan)
 
-	go produce((*interval), *element)
-	go consume(c)
+
+
+	// multiple go routine to process created keys in zookeper data model
+	for i := 0; i < *goroutines; i++ {
+		go consume(c)
+	}
+	<-sign
+	close(closeChan)
 	<-done
 
 	childrenAfter, stat, ch, err := c.ChildrenW("/")
@@ -70,13 +79,29 @@ func main() {
 	fmt.Printf("%+v\n", e)
 }
 
-func produce(x time.Duration, n int) {
-	for i := 0; i < n; i++ {
-		time.Sleep(x)
-		str := fmt.Sprintf("/key-%d", i)
-		msgs <- str
+func produce(x time.Duration, n int, c chan struct{}) {
+	defer func(){
+		close(msgs)
+		done <- true
 	}
-	done <- true
+	for i := 0; i < n; i++ {
+		select {
+		case s := <-c:
+			fmt.Println("interrupt signal geldii!!!", s)
+			return
+		case <-time.After(x):
+			str := fmt.Sprintf("/key-%d", i)
+			msgs <- str
+		}
+
+		// time.Sleep(x)
+		// v, ok := <-c
+		// fmt.Println("v: %v, ok:%v", v, ok)
+		// if ok {
+		// 	str := fmt.Sprintf("/key-%d", i)
+		// 	msgs <- str
+		// }
+	}
 }
 
 func consume(c *zk.Conn) {
@@ -101,6 +126,8 @@ func cleanUp(c *zk.Conn) error {
 	}
 
 	for _, child := range children {
+		// delete operation takes path parameter
+		// then it should have '/' as first index
 		if err := c.Delete("/"+child, 0); err != nil {
 			// we can't delete /zookeeper path from the znodes
 			if child == "zookeeper" {
@@ -119,5 +146,6 @@ func handleCtrlC(c chan os.Signal) {
 	// handle ctrl+c event here
 	// for example, close database
 	fmt.Println("\nsignal: ", sig)
+	time.Sleep(2 * time.Second)
 	os.Exit(0)
 }
