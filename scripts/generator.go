@@ -31,8 +31,15 @@ var (
 	goroutines = flag.Int("goroutines", 2, "default go routines count")
 )
 
+var mu = &sync.Mutex{}
+
 func main() {
 	flag.Parse()
+
+	if *goroutines > *element {
+		fmt.Printf("%v", fmt.Errorf("err: goroutines should be less than element number"))
+		return
+	}
 
 	c, _, err := zk.Connect([]string{"0.0.0.0"}, time.Second) //*10)
 	if err != nil {
@@ -43,7 +50,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	childrenBefore, stat, ch, err := c.ChildrenW("/")
+	childrenBefore, stat, _, err := c.ChildrenW("/")
 	if err != nil {
 		panic(err)
 	}
@@ -68,19 +75,28 @@ func main() {
 	<-done
 	wg.Wait()
 
-	childrenAfter, stat, ch, err := c.ChildrenW("/")
+	childrenAfter, stat, _, err := c.ChildrenW("/")
 	if err != nil {
 		panic(err)
 	}
 
+	if producer == consumer {
+		fmt.Println("producer and consumer check is finihed as successfully")
+	}
+
 	fmt.Printf("children is :%+v, stat is: %+v\n", childrenAfter, stat)
 
-	if len(childrenAfter) == ELEMENT_NUMBER+1 {
+	if len(childrenAfter) == *element+1 {
 		fmt.Println("successfull")
 	}
-	e := <-ch
-	fmt.Printf("%+v\n", e)
+	os.Exit(0)
+	// e := <-ch
+	// fmt.Printf("%+v\n", e)
 }
+
+var (
+	producer, consumer int
+)
 
 func produce(x time.Duration, n int, c chan struct{}) {
 	defer func() {
@@ -96,6 +112,7 @@ func produce(x time.Duration, n int, c chan struct{}) {
 		case <-time.After(x):
 			str := fmt.Sprintf("/key-%d", i)
 			msgs <- str
+			producer++
 		}
 	}
 }
@@ -113,6 +130,11 @@ func consume(c *zk.Conn, wg *sync.WaitGroup) {
 			if err != zk.ErrNodeExists {
 				fmt.Println("ERROR IS :", err)
 			}
+		}
+		if err == nil {
+			mu.Lock()
+			consumer++
+			mu.Unlock()
 		}
 
 		fmt.Println(msg)
