@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 
@@ -51,19 +52,21 @@ func main() {
 
 	sign := make(chan os.Signal)
 	signal.Notify(sign, os.Interrupt, syscall.SIGTERM)
-	// go handleCtrlC(sign)
-	closeChan := make(chan struct{},0)
+
+	closeChan := make(chan struct{}, 0)
+	go handleCtrlC(sign, closeChan)
+
 	go produce(time.Second*time.Duration(*interval), *element, closeChan)
 
-
-
+	var wg sync.WaitGroup
+	wg.Add(*goroutines)
 	// multiple go routine to process created keys in zookeper data model
 	for i := 0; i < *goroutines; i++ {
-		go consume(c)
+		go consume(c, &wg)
 	}
-	<-sign
-	close(closeChan)
+
 	<-done
+	wg.Wait()
 
 	childrenAfter, stat, ch, err := c.ChildrenW("/")
 	if err != nil {
@@ -80,10 +83,11 @@ func main() {
 }
 
 func produce(x time.Duration, n int, c chan struct{}) {
-	defer func(){
+	defer func() {
 		close(msgs)
 		done <- true
-	}
+	}()
+
 	for i := 0; i < n; i++ {
 		select {
 		case s := <-c:
@@ -93,20 +97,17 @@ func produce(x time.Duration, n int, c chan struct{}) {
 			str := fmt.Sprintf("/key-%d", i)
 			msgs <- str
 		}
-
-		// time.Sleep(x)
-		// v, ok := <-c
-		// fmt.Println("v: %v, ok:%v", v, ok)
-		// if ok {
-		// 	str := fmt.Sprintf("/key-%d", i)
-		// 	msgs <- str
-		// }
 	}
 }
 
-func consume(c *zk.Conn) {
+func consume(c *zk.Conn, wg *sync.WaitGroup) {
+	defer wg.Done()
+
 	for {
-		msg := <-msgs
+		msg, ok := <-msgs
+		if !ok {
+			return
+		}
 		_, err := c.Create(msg, nil, 0, zk.WorldACL(zk.PermAll))
 		if err != nil {
 			if err != zk.ErrNodeExists {
@@ -141,8 +142,9 @@ func cleanUp(c *zk.Conn) error {
 	return nil
 }
 
-func handleCtrlC(c chan os.Signal) {
+func handleCtrlC(c chan os.Signal, cc chan struct{}) {
 	sig := <-c
+	close(cc)
 	// handle ctrl+c event here
 	// for example, close database
 	fmt.Println("\nsignal: ", sig)
