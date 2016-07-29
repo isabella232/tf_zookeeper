@@ -13,11 +13,9 @@ validate:
         code: |
           terraform get --update
           terraform validate
+
 deploy:
   steps:
-    - add-ssh-key:
-        keyname: DEPLOYMENT_KEY
-
     - script:
         name: install deps
         code: |
@@ -29,16 +27,12 @@ deploy:
         name: set ENV vars
         code: |
           export EB_APP_NAME=${EB_APP_NAME:-koding}
-          export EB_ENV_NAME=${EB_ENV_NAME:-zookeeper}
+          export EB_ENV_NAME=${EB_ENV_NAME:-koding-zookeeper}
           export EB_ENV_REGION=${EB_ENV_REGION:-us-east-1}
           export EB_S3_BUCKET_PREFIX=${EB_S3_BUCKET_PREFIX:-kodingdev-eb-deploy}
 
-          export STATE_STOR_BUCKET=${STATE_STOR_BUCKET:-kodingdev-tf-state}
-          export STATE_STOR_BUCKET_REGION=${STATE_STOR_BUCKET_REGION:-us-east-1}
-          export STATE_STOR_KEY=${STATE_STOR_KEY:-$WERCKER_APPLICATION_NAME}
-          export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-$TF_VAR_access_key}
-          export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-$TF_VAR_secret_key}
-
+          export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-$AWS_ACCESS_KEY}
+          export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-$AWS_SECRET_KEY}
     - script:
         name: create version file
         code: |
