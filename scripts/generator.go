@@ -6,16 +6,12 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
 
 	"github.com/samuel/go-zookeeper/zk"
-)
-
-const (
-	ELEMENT_NUMBER = 10
-	TIME_INTERVAL  = time.Second
 )
 
 // channel variables
@@ -27,8 +23,9 @@ var (
 // holds the flag variables
 var (
 	element    = flag.Int("element", 10, "default znode number")
-	interval   = flag.Int("interval", 1, "default duration to generate strings")
+	interval   = flag.Duration("interval", 1*time.Second, "default duration to generate strings")
 	goroutines = flag.Int("goroutines", 2, "default go routines count")
+	address    = flag.String("address", "0.0.0.0", "addresses for zookeeper")
 )
 
 var mu = &sync.Mutex{}
@@ -41,21 +38,17 @@ func main() {
 		return
 	}
 
-	c, _, err := zk.Connect([]string{"0.0.0.0"}, time.Second) //*10)
+	addressArray := strings.Split(*address, ",")
+
+	c, _, err := zk.Connect(addressArray, time.Second) //*10)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
+	// Before checking the zookeeper Data structure, clean all znodes from directory
 	if err := cleanUp(c); err != nil {
 		log.Fatal(err.Error())
 	}
-
-	childrenBefore, stat, _, err := c.ChildrenW("/")
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("children is :%+v, stat is: %+v\n", childrenBefore, stat)
 
 	sign := make(chan os.Signal)
 	signal.Notify(sign, os.Interrupt, syscall.SIGTERM)
@@ -63,7 +56,7 @@ func main() {
 	closeChan := make(chan struct{}, 0)
 	go handleCtrlC(sign, closeChan)
 
-	go produce(time.Second*time.Duration(*interval), *element, closeChan)
+	go produce(*interval, *element, closeChan)
 
 	var wg sync.WaitGroup
 	wg.Add(*goroutines)
@@ -75,23 +68,11 @@ func main() {
 	<-done
 	wg.Wait()
 
-	childrenAfter, stat, _, err := c.ChildrenW("/")
-	if err != nil {
-		panic(err)
-	}
-
 	if producer == consumer {
-		fmt.Println("producer and consumer check is finihed as successfully")
+		fmt.Println(fmt.Sprintf("producer:%d and consumer:%d checking is finihed as successfully", producer, consumer))
 	}
 
-	fmt.Printf("children is :%+v, stat is: %+v\n", childrenAfter, stat)
-
-	if len(childrenAfter) == *element+1 {
-		fmt.Println("successfull")
-	}
 	os.Exit(0)
-	// e := <-ch
-	// fmt.Printf("%+v\n", e)
 }
 
 var (
@@ -106,12 +87,12 @@ func produce(x time.Duration, n int, c chan struct{}) {
 
 	for i := 0; i < n; i++ {
 		select {
-		case s := <-c:
-			fmt.Println("interrupt signal geldii!!!", s)
+		case <-c:
 			return
 		case <-time.After(x):
 			str := fmt.Sprintf("/key-%d", i)
 			msgs <- str
+			// we dont need to lock process coz there is single process
 			producer++
 		}
 	}
@@ -128,16 +109,17 @@ func consume(c *zk.Conn, wg *sync.WaitGroup) {
 		_, err := c.Create(msg, nil, 0, zk.WorldACL(zk.PermAll))
 		if err != nil {
 			if err != zk.ErrNodeExists {
-				fmt.Println("ERROR IS :", err)
+				continue
 			}
+			fmt.Println(fmt.Errorf("%v", err.Error()))
+			return
 		}
+
 		if err == nil {
 			mu.Lock()
 			consumer++
 			mu.Unlock()
 		}
-
-		fmt.Println(msg)
 	}
 }
 
@@ -156,7 +138,7 @@ func cleanUp(c *zk.Conn) error {
 			if child == "zookeeper" {
 				continue
 			}
-			// fmt.Println("ERROR WHILE CLEANING", err)
+
 			return err
 		}
 	}
@@ -165,11 +147,7 @@ func cleanUp(c *zk.Conn) error {
 }
 
 func handleCtrlC(c chan os.Signal, cc chan struct{}) {
-	sig := <-c
-	close(cc)
 	// handle ctrl+c event here
-	// for example, close database
-	fmt.Println("\nsignal: ", sig)
-	time.Sleep(2 * time.Second)
-	os.Exit(0)
+	<-c
+	close(cc)
 }
