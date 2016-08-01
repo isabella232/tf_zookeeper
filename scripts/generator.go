@@ -34,8 +34,7 @@ func main() {
 	flag.Parse()
 
 	if *goroutines > *element {
-		fmt.Printf("%v", fmt.Errorf("err: goroutines should be less than element number"))
-		return
+		log.Fatal(fmt.Errorf("err: goroutines should be less than element number"))
 	}
 
 	addressArray := strings.Split(*address, ",")
@@ -70,6 +69,8 @@ func main() {
 
 	if producer == consumer {
 		fmt.Println(fmt.Sprintf("producer:%d and consumer:%d checking is finihed as successfully", producer, consumer))
+	} else {
+		fmt.Println(fmt.Sprintf("producer:%d and consumer:%d checking is failed", producer, consumer))
 	}
 
 	os.Exit(0)
@@ -131,14 +132,13 @@ func cleanUp(c *zk.Conn) error {
 	}
 
 	for _, child := range children {
+		// we can't delete /zookeeper path from the znodes
+		if child == "zookeeper" {
+			continue
+		}
 		// delete operation takes path parameter
 		// then it should have '/' as first index
 		if err := c.Delete("/"+child, 0); err != nil {
-			// we can't delete /zookeeper path from the znodes
-			if child == "zookeeper" {
-				continue
-			}
-
 			return err
 		}
 	}
