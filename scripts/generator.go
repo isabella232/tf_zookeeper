@@ -109,7 +109,7 @@ func consume(c *zk.Conn, wg *sync.WaitGroup) {
 		}
 		_, err := c.Create(msg, nil, 0, zk.WorldACL(zk.PermAll))
 		if err != nil {
-			if err != zk.ErrNodeExists {
+			if err == zk.ErrNodeExists {
 				continue
 			}
 			fmt.Println(fmt.Errorf("%v", err.Error()))
