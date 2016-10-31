@@ -1,7 +1,7 @@
 resource "aws_elastic_beanstalk_environment" "environment" {
   name                   = "${var.env_name}"
   application            = "${var.app_name}"
-  cname_prefix           = "${var.app_name}"
+  cname_prefix           = "${var.env_cname}"
   solution_stack_name    = "${var.solution_stack_name}"
   wait_for_ready_timeout = "20m"
   tier = "WebServer"
