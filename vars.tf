@@ -1,33 +1,13 @@
-variable "env_name" {
-  default = "koding-zookeeper"
-}
-
-variable "app_name" {
-  default = "koding"
-}
-
-variable "solution_stack_name" {
-  default = "64bit Amazon Linux 2016.03 v2.1.2 running PHP 5.6"
-}
-
 variable "key_pair_name" {
   default = "key-koding-eb-deployment-dev"
 }
 
-variable "iaminstanceprofile" {
-  default = "aws-elasticbeanstalk-ec2-role"
-}
-
 variable "s3_bucket_name" {
-  default = "koding-dev-test-exhibitor"
+  default = "kodingdev-exhibitor"
 }
 
 variable "ami_id" {
-  default = "ami-c0f164d7"
-}
-
-variable "instance_type" {
-  default = "c3.2xlarge"
+  default = "ami-1d33690a"
 }
 
 variable "vpc_id" {
@@ -40,6 +20,30 @@ variable "vpc_subnets" {
 
 variable "elb_subnet_ids" {
   default = "subnet-2a2e1b00,subnet-f4dbefac"
+}
+
+variable "env_name" {
+  default = "koding-zookeeper"
+}
+
+variable "env_cname" {
+  default = "koding-zookeeper"
+}
+
+variable "app_name" {
+  default = "koding"
+}
+
+variable "solution_stack_name" {
+  default = "64bit Amazon Linux 2016.03 v2.1.2 running PHP 5.6"
+}
+
+variable "instance_type" {
+  default = "c3.2xlarge"
+}
+
+variable "iaminstanceprofile" {
+  default = "aws-elasticbeanstalk-ec2-role"
 }
 
 variable "healthCheckEndpoint" {
@@ -69,11 +73,6 @@ variable "deployment_batch_size" {
 variable "service_role_name" {
   description = "The name of an IAM role that Elastic Beanstalk uses to manage resources for the environment."
   default     = "aws-elasticbeanstalk-service-role"
-}
-
-# Instance Settings
-variable "ec2_key_name" {
-  default = "ec2_key"
 }
 
 variable "aws_security_group_prefix" {
