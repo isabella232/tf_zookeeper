@@ -31,8 +31,6 @@ deploy:
           export EB_ENV_REGION=${EB_ENV_REGION:-us-east-1}
           export EB_S3_BUCKET_PREFIX=${EB_S3_BUCKET_PREFIX:-kodingdev-eb-deploy}
 
-          export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-$AWS_ACCESS_KEY}
-          export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-$AWS_SECRET_KEY}
     - script:
         name: create version file
         code: |
@@ -45,8 +43,13 @@ deploy:
           echo $PAPERTRAIL_PORT > PAPERTRAIL_PORT
           echo $PAPERTRAIL_TOKEN > PAPERTRAIL_TOKEN
 
-          echo "com.netflix.exhibitor.s3.access-key-id=${AWS_ACCESS_KEY_ID}" >> credentials.properties
-          echo "com.netflix.exhibitor.s3.access-secret-key=${AWS_SECRET_ACCESS_KEY}" >> credentials.properties
+          echo "com.netflix.exhibitor.s3.access-key-id=${EXBT_AWS_ACCESS_KEY}" >> credentials.properties
+          echo "com.netflix.exhibitor.s3.access-secret-key=${EXBT_AWS_SECRET_KEY}" >> credentials.properties
+
+          echo "export EXBT_AWS_ACCESS_KEY=${EXBT_AWS_ACCESS_KEY}"      >> supervisord_env.sh
+          echo "export EXBT_AWS_SECRET_KEY=${EXBT_AWS_SECRET_KEY}"      >> supervisord_env.sh
+          echo "export EXBT_S3_BUCKET=${EXBT_S3_BUCKET}"                >> supervisord_env.sh
+          echo "export EXBT_S3_BACKUP_PREFIX=${EXBT_S3_BACKUP_PREFIX}"  >> supervisord_env.sh
 
     - script:
         name: zip
