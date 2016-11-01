@@ -78,3 +78,7 @@ variable "service_role_name" {
 variable "aws_security_group_prefix" {
   default = "sec-group-"
 }
+
+variable "notification_email" {
+  default = "sysops+proxy-dev-us-e-1-v2@koding.com"
+}

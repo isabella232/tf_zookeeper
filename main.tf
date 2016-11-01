@@ -174,7 +174,7 @@ resource "aws_elastic_beanstalk_environment" "environment" {
   setting {
     namespace = "aws:elasticbeanstalk:application:environment"
     name      = "EB_ENV_NAME"
-    value     = "koding-zookeeper"
+    value     = "${var.env_name}"
   }
 
   # AWS:ELASTICBEANSTALK:COMMAND
@@ -231,7 +231,7 @@ resource "aws_elastic_beanstalk_environment" "environment" {
   setting {
     namespace = "aws:elasticbeanstalk:sns:topics"
     name      = "Notification Endpoint"
-    value     = "sysops+proxy-dev-us-e-1-v2@koding.com"
+    value     = "${var.notification_email}"
   }
   setting {
     namespace = "aws:elasticbeanstalk:sns:topics"
