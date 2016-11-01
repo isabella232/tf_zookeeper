@@ -7,7 +7,7 @@ validate:
           apt-get update
           apt-get -y -qq install wget unzip curl
     - capgemini/terraform-install:
-        version: "0.6.16"
+        version: "0.7.3"
     - script:
         name: run terraform validate
         code: |
