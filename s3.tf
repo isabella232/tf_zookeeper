@@ -14,7 +14,7 @@ resource "aws_iam_policy" "bucket_policy" {
     name = "policy_exhibitor_${var.s3_bucket_name}_bucket"
     path = "/"
     description = "Policy for exhibitor configuration sharing under ${var.s3_bucket_name} bucket"
-    policy = "${template_file.bucket_policy_json.rendered}"
+    policy = "${data.template_file.bucket_policy_json.rendered}"
 }
 
 resource "aws_iam_policy_attachment" "attach" {
@@ -27,7 +27,7 @@ resource "aws_iam_access_key" "access_key_for_exhibitor" {
     user = "${aws_iam_user.user_for_bucket.name}"
 }
 
-resource "template_file" "bucket_policy_json" {
+data "template_file" "bucket_policy_json" {
   template = "${file("data/bucket_policy.json.tpl")}"
 
   vars = {
