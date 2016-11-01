@@ -7,7 +7,7 @@ variable "s3_bucket_name" {
 }
 
 variable "ami_id" {
-  default = "ami-1d33690a"
+  default = "ami-5b35104c"
 }
 
 variable "vpc_id" {
