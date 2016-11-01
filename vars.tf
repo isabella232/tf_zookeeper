@@ -35,7 +35,7 @@ variable "app_name" {
 }
 
 variable "solution_stack_name" {
-  default = "64bit Amazon Linux 2016.03 v2.1.2 running PHP 5.6"
+  default = "64bit Amazon Linux 2016.09 v2.2.0 running PHP 5.6"
 }
 
 variable "instance_type" {
