@@ -46,10 +46,10 @@ deploy:
           echo "com.netflix.exhibitor.s3.access-key-id=${EXBT_AWS_ACCESS_KEY}" >> credentials.properties
           echo "com.netflix.exhibitor.s3.access-secret-key=${EXBT_AWS_SECRET_KEY}" >> credentials.properties
 
-          echo "export AWS_REGION=${EB_ENV_REGION}"                     >> env_overrides.sh
+          echo "export EXBT_AWS_REGION=${EB_ENV_REGION}"                >> env_overrides.sh
           echo "export EXBT_AWS_ACCESS_KEY=${EXBT_AWS_ACCESS_KEY}"      >> env_overrides.sh
           echo "export EXBT_AWS_SECRET_KEY=${EXBT_AWS_SECRET_KEY}"      >> env_overrides.sh
-          echo "export EXBT_S3_BUCKET=${EXBT_S3_BUCKET}"                >> env_overrides.sh
+          echo "export EXBT_S3_BACKUP_PATH=${EXBT_S3_BACKUP_PATH}"      >> env_overrides.sh
           echo "export EXBT_S3_BACKUP_PREFIX=${EXBT_S3_BACKUP_PREFIX}"  >> env_overrides.sh
           chmod 777 env_overrides.sh
 
